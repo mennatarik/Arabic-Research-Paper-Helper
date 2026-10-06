@@ -1,0 +1,13 @@
+streamlit
+pyngrok
+pypdf
+langchain
+langchain-community
+langchain-huggingface
+langchain-text-splitters
+faiss-cpu
+sentence-transformers
+transformers
+accelerate
+bitsandbytes
+torch
