@@ -1,5 +1,16 @@
+import html
 import streamlit as st
 import rag
+
+# Arabic must be shown right-to-left, otherwise punctuation and English words jump around.
+st.markdown("<style>.rtl{direction:rtl;text-align:right;line-height:2;font-size:1.1rem}</style>",
+            unsafe_allow_html=True)
+ 
+ 
+def arabic(text):
+    body = html.escape(text).replace("\n", "<br>")
+    st.markdown(f'<div class="rtl">{body}</div>', unsafe_allow_html=True)
+
 
 # Streamlit runs this whole file from top to bottom every time you click something.
 
@@ -27,10 +38,10 @@ question = st.text_input("اكتب سؤالك هنا")
 if st.button("Ask") and question:
     result = rag.ask(question)               # retrieve + Qwen answer
 
-    st.write(result["answer"])
+    arabic(result["answer"])
     st.write("Confidence:", result["confidence"], "%")
-    st.write("Category:", result["category"])
-    st.write("Follow-up:", result["follow_up"])
+    arabic("Category:"+ result["category"])
+    arabic("Follow-up:"+ result["follow_up"])
 
     st.subheader("Sources")
     for doc, similarity in result["hits"]:
