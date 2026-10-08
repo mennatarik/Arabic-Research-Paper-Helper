@@ -116,14 +116,25 @@ def list_docs() -> list[str]:
 
 
 # ---------------------------------------------------------------- question answering
-def retrieve(question: str, k: int = TOP_K):
-    """Returns [(Document, similarity)]; with inner product the score is already the similarity."""
+def retrieve(question: str, k: int = TOP_K, per_paper: bool = False):
+    """Returns [(Document, similarity)], best first. With inner product the score is the similarity.
+ 
+    per_paper=True takes the best chunks from EVERY paper (useful for comparing papers)."""
     store = get_store()
     if store is None:
         return []
-    return [(doc, float(score)) for doc, score in store.similarity_search_with_score(question, k=k)]
-
-
+    if not per_paper:
+        results = store.similarity_search_with_score(question, k=k)
+    else:
+        results = []
+        for doc in list_docs():
+            # FAISS filters after searching fetch_k candidates, so search all chunks (fine for a few papers)
+            results += store.similarity_search_with_score(
+                question, k=PER_PAPER_K, filter={"doc": doc}, fetch_k=store.index.ntotal)
+    results = sorted(results, key=lambda r: r[1], reverse=True)
+    return [(doc, float(score)) for doc, score in results]
+ 
+ 
 def _field(text: str, label: str) -> str:
     m = re.search(rf"{label}\s*:\s*(.*?)(?=\n(?:الإجابة|التصنيف|سؤال المتابعة)\s*:|\Z)", text, re.S)
     return m.group(1).strip() if m else ""

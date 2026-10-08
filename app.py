@@ -34,9 +34,10 @@ st.write("Indexed papers:", rag.list_docs())
 st.header("2) Ask in Arabic")
 
 question = st.text_input("اكتب سؤالك هنا")
+per_paper = st.checkbox("Compare papers (take chunks from every paper)")
 
 if st.button("Ask") and question:
-    result = rag.ask(question)               # retrieve + Qwen answer
+    result = rag.ask(question, per_paper)  # retrieve + Qwen answer
 
     arabic(result["answer"])
     st.write("Confidence:", result["confidence"], "%")
