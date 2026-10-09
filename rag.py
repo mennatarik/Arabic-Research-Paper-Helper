@@ -16,6 +16,7 @@ LLM_MODEL = "Qwen/Qwen3-4B-Instruct-2507"    # check the exact name on Hugging F
 CHUNK_SIZE = 1000                            # characters
 CHUNK_OVERLAP = 150
 TOP_K = 4
+PER_PAPER_K = 2   # chunks taken from each paper when comparing papers
 
 BASE = Path(__file__).parent
 UPLOAD_DIR = BASE / "data" / "uploads"
@@ -140,8 +141,8 @@ def _field(text: str, label: str) -> str:
     return m.group(1).strip() if m else ""
 
 
-def ask(question: str) -> dict:
-    hits = retrieve(question)
+def ask(question: str, per_paper: bool = False) -> dict:
+    hits = retrieve(question, per_paper=per_paper)
     if not hits:
         return {"answer": "لا توجد أوراق مفهرسة بعد.", "category": "", "follow_up": "",
                 "confidence": 0, "found": False, "hits": []}
